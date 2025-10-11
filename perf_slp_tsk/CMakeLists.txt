@@ -6,6 +6,12 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+include(../ConfigSingle.cmake)
+
+list(APPEND FMP3_COMPILE_DEFS
+    TNUM_PRCID=${TNUM_PRCID}
+)
+
 # Initialise pico_sdk from installed location
 # (note this can come from environment, CMake cache etc)
 

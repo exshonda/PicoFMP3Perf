@@ -46,7 +46,7 @@ include(../fmp3/fmp3_pico_sdk.cmake)
 
 add_executable(fmp3_pico_sdk
     fmp3_pico_sdk.c
-    ../perf/perf_slp_tsk.c
+    ../perf/perf_sig_sem_single.c
     ${FMP3_ROOT_DIR}/syssvc/histogram.c
 )
 
@@ -58,7 +58,7 @@ pico_enable_stdio_uart(fmp3_pico_sdk 1)
 pico_enable_stdio_usb(fmp3_pico_sdk 0)
 
 # TOPPERS/FMP3 のカーネルオブジェクト定義のcfgファイルを設定
-set(FMP3_APP_CFG_FILE ${PROJECT_SOURCE_DIR}/../perf/perf_slp_tsk.cfg)
+set(FMP3_APP_CFG_FILE ${PROJECT_SOURCE_DIR}/../perf/perf_sig_sem_single.cfg)
 
 list(APPEND FMP3_INCLUDE_DIRS
     ../perf

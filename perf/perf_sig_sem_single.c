@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  *
- *  Copyright (C) 2009 by Embedded and Real-Time Systems Laboratory
+ *  Copyright (C) 2009-2010 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  *
  *  上記著作権者は，以下の(1)～(4)の条件を満たす場合に限り，本ソフトウェ
@@ -34,27 +34,22 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
- *  @(#) $Id: perf_slp_tsk.c 1203 2016-07-18 07:05:08Z ertl-honda $
+ *  @(#) $Id: perf_sig_sem.c 1203 2016-07-18 07:05:08Z ertl-honda $
  */
 
 /*
- *  slp_tsk 性能測定プログラム
+ *  sig_sem 性能測定プログラム
  */
 
 #include "perf.h"
-#include "perf_slp_tsk.h"
+#include "perf_sig_sem_single.h"
+
 
 /*
  *  計測回数と実行時間分布を記録する最大時間
  */
 #define NO_MEASURE	20000U			/* 計測回数 */
 #define MAX_TIME	400000U			/* 実行時間分布を記録する最大時間 */
-
-/*
- *  実行時間分布を記録するメモリ領域
- */
-static uint_t	histarea1[MAX_TIME + 1];
-static uint_t	histarea2[MAX_TIME + 1];
 
 /*
  *  計測の前後でのフックルーチン
@@ -74,9 +69,7 @@ static uint_t	histarea2[MAX_TIME + 1];
 
 void task1_1(intptr_t exinf)
 {
-	end_measure(1);
-	begin_measure(2);
-	wup_tsk(MAIN_TASK1);
+	wai_sem(SEM1);
 }
 
 /*
@@ -87,7 +80,7 @@ void perf_eval(uint_t n)
 	uint_t	i;
 
 	init_hist(1);
-	init_hist(2);
+	syslog_fls_log();
 
 	dly_tsk(1000000);
 	CPU1_PERF_PRE_HOOK;
@@ -99,14 +92,22 @@ void perf_eval(uint_t n)
 			begin_measure(1);
 			end_measure(1);
 			break;
-			//【1】slp_tsk()から低優先度のタスクに切り替わるまでの時間
-			//【2】wup_tsk()から高優先度のタスクに切り替わるまでの時間
+			//【１】セマフォに対する待ちタスクが存在せず，セマフォ資源数に1加える．
 		case 1:
+			begin_measure(1);
+			sig_sem(SEM1);
+			end_measure(1);
+			wai_sem(SEM1);
+			break;
+			//【２】セマフォに対する待ちタスクが存在する．sig_semを実行
+			//      するタスク（実行タスク）と同じプロセッサに割り付けら
+			//      れており，優先度は実行タスクより高いため，ディスパッチが発生する
+		case 2:
+			chg_pri(0, MID_PRIORITY);            
 			act_tsk(TASK1_1);
 			begin_measure(1);
-			slp_tsk();
-			end_measure(2);
-			chg_pri(0, LOW_PRIORITY);
+			sig_sem(SEM1);
+			end_measure(1);
 			chg_pri(0, MAIN_PRIORITY);
 			break;
 		}
@@ -118,13 +119,7 @@ void perf_eval(uint_t n)
 	syslog(LOG_NOTICE, "(%d)", n);
 	syslog(LOG_NOTICE, "----------------------------------");
 	print_hist(1);
-	
-	if (n == 1) {
-		syslog(LOG_NOTICE, "==================================");
-		syslog(LOG_NOTICE, "(%d)", 2);
-		syslog(LOG_NOTICE, "----------------------------------");
-		print_hist(2);
-	}
+//	test_finish();
 }
 
 /*
@@ -132,7 +127,8 @@ void perf_eval(uint_t n)
  */
 void main_task1(intptr_t exinf)
 {
-	syslog(LOG_NOTICE, "perf_slp_tsk for fmp3");
+	syslog(LOG_NOTICE, "perf_sig_sem for fmp3");
 	perf_eval(0);
 	perf_eval(1);
+	perf_eval(2);
 }

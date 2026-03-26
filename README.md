@@ -15,12 +15,13 @@ set(TNUM_PRCID 1)
   - 内蔵タイマーによる計測
     - 1us精度による計測
   - GPIOによる計測
-    - GP2/GP3による計測
+    - GP2/GP3/GP4による計測
     - 使用するポートは./fmp3/target/rp2350-arm-s_pico_sdk/taget_test.h のマクロで指定する
 
 ```
 #define M_GPIO_NO1  2
 #define M_GPIO_NO2  3
+#define M_GPIO_NO3  4
 ```
 
 - 切り替え方法

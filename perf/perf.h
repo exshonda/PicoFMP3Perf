@@ -48,7 +48,7 @@
  * タイマーを使用した計測(us)の場合に有効に
  * 無効でGPIOによる計測に変更 
  */
-//#define USE_HISTOGRAM
+#define USE_HISTOGRAM
 
 #include <kernel.h>
 #include <t_syslog.h>

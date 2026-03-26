@@ -2,7 +2,7 @@
  *  TOPPERS Software
  *      Toyohashi Open Platform for Embedded Real-Time Systems
  * 
- *  Copyright (C) 2009 by Embedded and Real-Time Systems Laboratory
+ *  Copyright (C) 2025 by Embedded and Real-Time Systems Laboratory
  *              Graduate School of Information Science, Nagoya Univ., JAPAN
  * 
  *  上記著作権者は，以下の(1)～(4)の条件を満たす場合に限り，本ソフトウェ
@@ -34,34 +34,32 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  * 
- *  @(#) $Id: perf_sig_sem.h 1203 2016-07-18 07:05:08Z ertl-honda $
+ *  @(#) $Id: perf_slp_tsk.h 1203 2016-07-18 07:05:08Z ertl-honda $
  */
 
 /*
- *  各タスクの優先度の定義
+ * 性能評価プログラムの共通ヘッダーファイル
  */
-/* メインタスクの優先度 */
-#define MAIN_PRIORITY	8
 
-/* 並列に実行されるタスクの優先度 */
-#define HIGH_PRIORITY	9
-#define MID_PRIORITY	10
-#define LOW_PRIORITY	11
+#ifndef PERF_H
+#define PERF_H
 
 /*
- *  ターゲットに依存する可能性のある定数の定義
+ * タイマーを使用した計測(us)の場合に有効に
+ * 無効でGPIOによる計測に変更 
  */
-#ifndef STACK_SIZE
-#define	STACK_SIZE		4096		/* タスクのスタックサイズ */
-#endif /* STACK_SIZE */
+//#define USE_HISTOGRAM
 
-#define PRCID_WAIT(TASK,PRCID) { T_RTSK  ___rtsk; do { ref_tsk(TASK, &___rtsk); } while ( ___rtsk.prcid != PRCID );}
-#define STAT_WAIT(TASK,TTS) {T_RTSK  ___rtsk; do { ref_tsk(TASK, &___rtsk); } while ( ___rtsk.tskstat != TTS );}
-#define BUSY_WAIT(TIME) sil_dly_nse(TIME)
+#include <kernel.h>
+#include <t_syslog.h>
+#include <sil.h>
+#include "syssvc/syslog.h"
+#include "kernel_cfg.h"
 
-/*
- *  関数のプロトタイプ宣言
- */
-extern void perf_timer_initialize(intptr_t exinf); 
-extern void	main_task1(intptr_t exinf);
-extern void	task1_1(intptr_t exinf);
+#ifdef USE_HISTOGRAM
+#include "syssvc/histogram.h"
+#else /* USE_HISTOGRAM */
+#include "target_test.h"
+#endif /* USE_HISTOGRAM */
+
+#endif /* PERF_H */

@@ -41,14 +41,9 @@
  *  sig_sem 性能測定プログラム
  */
 
-#include <kernel.h>
-#include <t_syslog.h>
-#include <sil.h>
-#include "syssvc/syslog.h"
-#include "syssvc/histogram.h"
-#include "kernel_cfg.h"
+#include "perf.h"
 #include "perf_sig_sem.h"
-#include "target_test.h"
+
 
 /*
  *  計測回数と実行時間分布を記録する最大時間
@@ -106,14 +101,14 @@ void perf_eval(uint_t n)
 			break;
 			//【２】セマフォに対する待ちタスクが存在する．sig_semを実行
 			//      するタスク（実行タスク）と同じプロセッサに割り付けら
-			//      れており，優先度は実行タスクより低い
+			//      れており，優先度は実行タスクより高いため，ディスパッチが発生する
 		case 2:
+			chg_pri(0, MID_PRIORITY);            
 			act_tsk(TASK1_1);
-			chg_pri(0, HIGH_PRIORITY);
 			begin_measure(1);
 			sig_sem(SEM1);
 			end_measure(1);
-			chg_pri(0, MID_PRIORITY);
+			chg_pri(0, MAIN_PRIORITY);
 			break;
 		}
 	}

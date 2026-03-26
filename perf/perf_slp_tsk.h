@@ -41,7 +41,7 @@
  *  各タスクの優先度の定義
  */
 /* メインタスクの優先度 */
-#define MAIN_PRIORITY	10
+#define MAIN_PRIORITY	8
 
 /* 並列に実行されるタスクの優先度 */
 #define HIGH_PRIORITY	9

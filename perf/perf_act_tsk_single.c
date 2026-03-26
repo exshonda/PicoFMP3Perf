@@ -41,14 +41,8 @@
  *  act_tsk 性能測定プログラム（シングルプロセッサ向け）
  */
 
-#include <kernel.h>
-#include <t_syslog.h>
-#include <sil.h>
-#include "syssvc/syslog.h"
-#include "syssvc/histogram.h"
-#include "kernel_cfg.h"
+#include "perf.h"
 #include "perf_act_tsk_single.h"
-#include "target_test.h"
 
 
 /*
